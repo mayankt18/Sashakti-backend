@@ -1,0 +1,3 @@
+# Sashakti Backend
+
+This is the backend for sashakti project and is built using django and django rest framework....

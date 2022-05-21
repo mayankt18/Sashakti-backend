@@ -10,9 +10,18 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Create a random secret
+        id: gen_secret
+        run: |
+          secret=$(head -c 32 /dev/urandom | base64)
+          echo "::set-output name=tag::$secret"
+
       - uses: actions/checkout@v2
       - uses: akhileshns/heroku-deploy@v3.12.12
         with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
-          heroku_email: ${{secrets.HEROKU_EMAIL}}
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+        env:
+          HD_SECRET_KEY: ${{ steps.gen_secret.secret }}
+          HD_DATABASE_URL: ${{ secrets.DATABASE_URL }}

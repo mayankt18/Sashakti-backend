@@ -50,7 +50,7 @@ class Job(models.Model):
     job_updated_at = models.DateTimeField(auto_now=True)
 
 
-class User(models.Model):
+class Candidate(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)

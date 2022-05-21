@@ -15,6 +15,11 @@ from django.contrib.auth import get_user_model
 from .serializers import CandidateSerializer, TutorSerializer, UserSerializer, EmployerSerializer
 from .models import Candidate, Employer, Tutor
 
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from dj_rest_auth.registration.views import SocialLoginView
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from django.conf import settings
+
 
 def home(request):
     return HttpResponse("Sashakti backend homepage....")
@@ -132,3 +137,11 @@ def update_tutor_profile(request):
     if serializer.is_valid(raise_exception=True):
         serializer.save()
         return Response(serializer.data, status=HTTP_200_OK)
+
+
+
+class GoogleLogin(SocialLoginView):
+    authentication_classes = [] # disable authentication
+    adapter_class = GoogleOAuth2Adapter
+    callback_url = "http://localhost:3000"
+    client_class = OAuth2Client

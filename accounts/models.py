@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import MinValueValidator
+from django.core.validators import MinLengthValidator
 from django.contrib.auth.models import User
 # Create your models here.
 
@@ -8,7 +8,7 @@ class Employer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)
-    phone = models.CharField(max_length=10, validators=[MinValueValidator(10)], blank=True, null=True)
+    phone = models.CharField(max_length=10, validators=[MinLengthValidator(10)], blank=True, null=True)
     address = models.CharField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
     state = models.CharField(max_length=100, null=True, blank=True)
@@ -54,7 +54,7 @@ class Candidate(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)
-    phone = models.CharField(max_length=10, validators=[MinValueValidator(10)], blank=True, null=True)
+    phone = models.CharField(max_length=10, validators=[MinLengthValidator(10)], blank=True, null=True)
     address = models.CharField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
     state = models.CharField(max_length=100, null=True, blank=True)

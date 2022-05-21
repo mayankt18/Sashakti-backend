@@ -12,7 +12,8 @@ from rest_framework.status import (
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView
 from django.contrib.auth import get_user_model
-from .serializers import UserSerializer
+from .serializers import CandidateSerializer, TutorSerializer, UserSerializer, EmployerSerializer
+from .models import Candidate, Employer, Tutor
 
 
 def home(request):
@@ -49,3 +50,85 @@ def login(request):
                     status=HTTP_200_OK)
 
 
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def logout(request):
+    """
+    POST accounts/logout/
+    """
+    request.user.auth_token.delete()
+    return Response(status=HTTP_200_OK)
+
+
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def get_user(request):
+    """
+    POST accounts/getuser/
+    """
+    return Response(UserSerializer(request.user).data)
+
+
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def update_employer_profile(request):
+    """
+    POST accounts/update_employer_profile/
+    """
+    context = {
+        'request':request
+    }
+    try:
+        employer = Employer.objects.get(user=request.user)
+        serializer = EmployerSerializer(employer, data=request.data, context=context)
+    except:
+        serializer = EmployerSerializer(data=request.data, context=context)
+
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
+        return Response(serializer.data, status=HTTP_200_OK)
+
+
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def update_candidate_profile(request):
+    """
+    POST accounts/update_candidate_profile/
+    """
+    context = {
+        'request':request
+    }
+    try:
+        employer = Candidate.objects.get(user=request.user)
+        serializer = CandidateSerializer(employer, data=request.data, context=context)
+    except:
+        serializer = CandidateSerializer(data=request.data, context=context)
+
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
+        return Response(serializer.data, status=HTTP_200_OK)
+
+
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def update_tutor_profile(request):
+    """
+    POST accounts/update_tutor_profile/
+    """
+    context = {
+        'request':request
+    }
+    try:
+        tutor = Tutor.objects.get(user=request.user)
+        serializer = TutorSerializer(tutor, data=request.data, context=context)
+    except:
+        serializer = TutorSerializer(data=request.data, context=context)
+
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
+        return Response(serializer.data, status=HTTP_200_OK)

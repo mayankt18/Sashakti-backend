@@ -38,6 +38,7 @@ class Course(models.Model):
     duration = models.IntegerField(default=0)
     image = models.CharField(max_length=100, null=True, blank=True)
     organization = models.CharField(max_length=100, null=True, blank=True)
+    views = models.IntegerField(default=0)
 
 
 class Skill(models.Model):
@@ -59,6 +60,7 @@ class Job(models.Model):
     job_status = models.CharField(max_length=100, null=True, blank=True)
     job_created_at = models.DateTimeField(auto_now_add=True)
     job_updated_at = models.DateTimeField(auto_now=True)
+    views = models.IntegerField(default=0)
 
 
 class Candidate(models.Model):
@@ -73,4 +75,8 @@ class Candidate(models.Model):
     country = models.CharField(max_length=100, null=True, blank=True)
     qualification = models.CharField(max_length=100, null=True, blank=True)
     skill = models.ManyToManyField(Skill, blank=True)
+    job = models.ManyToManyField(Job, blank=True)
+    course = models.ManyToManyField(Course, blank=True)
+
+
 

@@ -1,14 +1,16 @@
+from accounts.serializers import EmployerSerializer
 from rest_framework.generics import ListAPIView,CreateAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_201_CREATED,
-    HTTP_403_FORBIDDEN
+    HTTP_403_FORBIDDEN,
+    HTTP_200_OK
 )
 from rest_framework.response import Response
 
-from accounts.models import Course, Employer, Job, Skill, Candidate
+from accounts.models import Course, Employer, Job, Skill, Candidate, Tutor
 from .serilaizers import CourseSerializer, JobSerializer, SkillSerializer
 from django.db.models import Q
 
@@ -19,6 +21,24 @@ class ListCoursesView(ListAPIView):
     serializer_class = CourseSerializer
     permission_classes = [IsAuthenticated]
 
+
+class ListCoursesByTutorView(ListAPIView):
+    queryset = Course.objects.all()
+
+    serializer_class = CourseSerializer
+    permission_class = [IsAuthenticated]
+
+    def get(self,request,*args,**kwargs):
+        user = request.user
+
+        try :
+            tutor = Tutor.objects.get(user=user)
+        except :
+            return Response({'error':'Tutor not found'},status=HTTP_403_FORBIDDEN)
+
+        serializer = CourseSerializer(Course.objects.filter(tutor=tutor),many=True)
+        return Response(serializer.data,status=HTTP_200_OK)
+
 class CreateCoursesView(CreateAPIView):
     queryset = Course.objects.all()
 
@@ -27,9 +47,17 @@ class CreateCoursesView(CreateAPIView):
 
     def post(self,request,*args,**kwargs):
         user = request.user
-        if not True :
-            return Response({'error':'Only Tutors can create courses'},status=HTTP_400_BAD_REQUEST)
-        serializer = CourseSerializer(data = request.data)
+
+        try:
+            tutor = Tutor.objects.get(user=user)
+        except :
+            return Response({'error':'Tutor not found'},status=HTTP_403_FORBIDDEN)
+
+        data = request.data.copy()
+
+        data["tutor"] = int(tutor.id)
+
+        serializer = CourseSerializer(data = data)
         if(serializer.is_valid()):
             serializer.save()
             return Response(serializer.data,status=HTTP_201_CREATED)
@@ -73,6 +101,23 @@ class ListJobsView(ListAPIView):
 
     serializer_class = JobSerializer
     permission_classes = [IsAuthenticated]
+
+class ListJobsByEmployerView(ListAPIView):
+    queryset = Job.objects.all()
+
+    serializer_class = JobSerializer
+    permission_class = [IsAuthenticated]
+
+    def get(self,request,*args,**kwargs):
+        user = request.user
+
+        try :
+            employer = Employer.objects.get(user=user)
+        except :
+            return Response({'error':'Employer not found'},status=HTTP_403_FORBIDDEN)
+
+        serializer = JobSerializer(Job.objects.filter(employer=employer),many=True)
+        return Response(serializer.data,status=HTTP_200_OK)
 
 
 class CreateJobsView(CreateAPIView):

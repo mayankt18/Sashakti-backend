@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'corsheaders',
     'accounts',
     'main',
     "dj_rest_auth",
@@ -196,7 +195,7 @@ SIMPLE_JWT = {
 REST_FRAMEWORK = {
    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        'rest_framework.authentication.TokenAuthentication',
+        "rest_framework.authentication.TokenAuthentication",
         "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.SessionAuthentication",
         "dj_rest_auth.utils.JWTCookieAuthentication",

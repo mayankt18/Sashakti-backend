@@ -1,10 +1,12 @@
 from accounts.serializers import EmployerSerializer
-from rest_framework.generics import ListAPIView,CreateAPIView
+from rest_framework.generics import ListAPIView,CreateAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.shortcuts import get_object_or_404
 
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_201_CREATED,
+    HTTP_404_NOT_FOUND,
     HTTP_403_FORBIDDEN,
     HTTP_200_OK
 )
@@ -62,6 +64,25 @@ class CreateCoursesView(CreateAPIView):
             serializer.save()
             return Response(serializer.data,status=HTTP_201_CREATED)
         return Response(serializer.errors,status=HTTP_400_BAD_REQUEST)
+
+
+class CourseDetailView(RetrieveAPIView):
+    queryset = Course.objects.all()
+
+    serializer_class = CourseSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = "id"
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        filter = {}
+        filter["id"] = self.kwargs["id"]
+
+        obj = get_object_or_404(queryset, **filter)
+        obj.views+=1
+        obj.save()
+        self.check_object_permissions(self.request, obj)
+        return obj
 
 
 
@@ -144,6 +165,25 @@ class CreateJobsView(CreateAPIView):
             return Response(serializer.data,status=HTTP_201_CREATED)
         return Response(serializer.errors,status=HTTP_400_BAD_REQUEST)
 
+
+
+class JobDetailView(RetrieveAPIView):
+    queryset = Job.objects.all()
+
+    serializer_class = JobSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = "id"
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        filter = {}
+        filter["id"] = self.kwargs["id"]
+
+        obj = get_object_or_404(queryset, **filter)
+        obj.views+=1
+        obj.save()
+        self.check_object_permissions(self.request, obj)
+        return obj
 
 class CandidateJobsView(ListAPIView):
     serializer_class = JobSerializer

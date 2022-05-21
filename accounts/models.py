@@ -20,8 +20,19 @@ class Employer(models.Model):
     company_logo = models.CharField(max_length=100, null=True, blank=True)
 
 
+class Tutor(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    email = models.EmailField(blank=True, null=True)
+    company = models.CharField(max_length=100, null=True, blank=True)
+    qualifications = models.CharField(max_length=200, blank=True, null=True)
+    about = models.TextField(max_length=512, blank=True, null=True)
+    image = models.URLField(blank=True, null=True)
+
+
 class Course(models.Model):
     name = models.CharField(max_length=100)
+    tutor = models.ForeignKey(Tutor, on_delete=models.CASCADE)
     description = models.CharField(max_length=100, null=True, blank=True)
     price = models.FloatField(default=0)
     duration = models.IntegerField(default=0)

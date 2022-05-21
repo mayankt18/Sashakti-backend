@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-=0!t1b5jsj@ny^rxeimotw%jos%-4nr7b@sb@(dj7#m)kby2g4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -44,10 +44,20 @@ INSTALLED_APPS = [
     'corsheaders',
     'accounts',
     'main',
+    "dj_rest_auth",
+    "allauth",
+    "allauth.account",
+    "dj_rest_auth.registration",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "corsheaders",
+    "django.contrib.sites",
 ]
 
+
+
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -152,3 +162,43 @@ CORS_ALLOWED_ORIGINS = [
 
 # Configure Django App for Heroku
 django_on_heroku.settings(locals())
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
+SOCIALACCOUNT_EMAIL_REQUIRED = False
+
+REST_USE_JWT = True
+
+SITE_ID = 1
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True, # IMPORTANT
+    'BLACKLIST_AFTER_ROTATION': True, # IMPORTANT
+    'UPDATE_LAST_LOGIN': True,
+}
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+REST_FRAMEWORK = {
+   "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+        "dj_rest_auth.utils.JWTCookieAuthentication",
+    ),
+}

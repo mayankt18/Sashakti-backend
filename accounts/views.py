@@ -138,6 +138,27 @@ def update_tutor_profile(request):
         return Response(serializer.data, status=HTTP_200_OK)
 
 
+@csrf_exempt
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_user_profile(request):
+    try:
+        candidate = Candidate.objects.get(user=request.user)
+        serializer = CandidateSerializer(candidate)
+    except:
+        try:
+            employer = Employer.objects.get(user=request.user)
+            serializer = EmployerSerializer(employer)
+        except:
+            try:
+                tutor = Tutor.objects.get(user=request.user)
+                serializer = TutorSerializer(tutor)
+            except:
+                return Response({"error":"user not found"},status=HTTP_404_NOT_FOUND)
+    return Response(serializer.data,status=HTTP_200_OK)
+
+
+
 
 class GoogleLogin(SocialLoginView):
     authentication_classes = [] # disable authentication

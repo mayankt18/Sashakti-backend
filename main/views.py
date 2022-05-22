@@ -97,6 +97,19 @@ class ListSkillsView(ListAPIView):
     serializer_class = SkillSerializer
     permission_classes = [IsAuthenticated]
 
+class ListSkillsByCandididate(ListAPIView):
+    serializer_class = JobSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        try :
+            candidate = Candidate.objects.get(user=user)
+        except :
+            return Job.objects.none()
+        return candidate.jobs.all()
+
+
 class CreateSkillsView(CreateAPIView):
     queryset = Skill.objects.all()
 
@@ -216,7 +229,7 @@ class SearchJobView(ListAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        jobs = Job.objects.filter(Q(title__icontains=self.kwargs['query']) | Q(description__icontains=self.kwargs['query']))
+        jobs = Job.objects.filter(Q(job_title__icontains=self.kwargs['query']) | Q(job_description__icontains=self.kwargs['query']))
         return jobs
 
 class SearchCourseView(ListAPIView):
@@ -224,7 +237,7 @@ class SearchCourseView(ListAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        courses = Course.objects.filter(Q(title__icontains=self.kwargs['query']) | Q(description__icontains=self.kwargs['query']))
+        courses = Course.objects.filter(Q(name__icontains=self.kwargs['query']) | Q(description__icontains=self.kwargs['query']))
         return courses
 
 
